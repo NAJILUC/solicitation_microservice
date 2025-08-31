@@ -1,23 +1,21 @@
 package co.com.pragma.model.solicitation;
-import lombok.Builder;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Solicitation {
+public class SolicitationWthData {
+
     private Long id;
     private Double amount;
     private Long term;
     private String email;
+    private String statusName;
     private Long statusId;
+    private String creditTypeName;
     private Long creditTypeId;
-
     private String applicantDocument;
-    private String masterUserId;
 }

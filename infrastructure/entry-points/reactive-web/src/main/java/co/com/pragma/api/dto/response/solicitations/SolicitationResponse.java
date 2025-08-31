@@ -1,23 +1,25 @@
-package co.com.pragma.model.solicitation;
-import lombok.Builder;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+package co.com.pragma.api.dto.response.solicitations;
 
-@Getter
-@Setter
-@NoArgsConstructor
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
+@Data
 @AllArgsConstructor
-@Builder(toBuilder = true)
-public class Solicitation {
+@NoArgsConstructor
+@Builder
+public class SolicitationResponse {
+
     private Long id;
     private Double amount;
     private Long term;
     private String email;
+    private String statusName;
     private Long statusId;
+    private String creditTypeName;
     private Long creditTypeId;
-
     private String applicantDocument;
-    private String masterUserId;
 }

@@ -1,8 +1,9 @@
 package co.com.pragma.r2dbc.entity;
 
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -20,6 +21,7 @@ public class SolicitationEntity {
     private Double amount;
     private Integer term;
     private String email;
+    private String applicantDocument;
 
     private Long creditTypeId;
     private Long statusId;
