@@ -1,12 +1,10 @@
 package co.com.pragma.api.routerrest.solicitations;
 
-import co.com.pragma.api.dto.request.solicitations.CreateSolicitationRequest;
-import co.com.pragma.api.dto.response.solicitations.SolicitationResponse;
-import co.com.pragma.api.handlers.solicitations.SolicitationHandler;
+import co.com.pragma.api.dto.response.solicitations.CreditTypeResponse;
+import co.com.pragma.api.handlers.solicitations.CreditTypeHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
@@ -16,35 +14,27 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
-public class SolicitationRouterRest {
+public class CreditTypeRouterRest {
     @Bean
     @RouterOperations({
             @RouterOperation(
-                    path = "/api/v1/solicitations",
-                    method = RequestMethod.POST,
+                    path = "/api/v1/credit-types",
+                    method = RequestMethod.GET,
                     operation = @Operation(
-                            operationId = "createSolicitation",
+                            operationId = "findAllCreditType",
                             summary = "Create a new solicitation",
-                            tags = {"Solicitation"},
-                            requestBody = @RequestBody(
-                                    description = "Solicitation data",
-                                    required = true,
-                                    content = @Content(
-                                            mediaType = "application/json",
-                                            schema = @Schema(implementation = CreateSolicitationRequest.class)
-                                    )
-                            ),
+                            tags = {"CreditType"},
                             responses = {
                                     @ApiResponse(
                                             responseCode = "200",
-                                            description = "Created solicitation",
+                                            description = "Credit types",
                                             content = @Content(
                                                     mediaType = "application/json",
-                                                    schema = @Schema(implementation = SolicitationResponse.class)
+                                                    schema = @Schema(implementation = CreditTypeResponse.class)
                                             )
                                     ),
                                     @ApiResponse(responseCode = "400", description = "Bad request"),
@@ -53,7 +43,7 @@ public class SolicitationRouterRest {
                     )
             )
     })
-    public RouterFunction<ServerResponse> solicitationRouterFunction(SolicitationHandler solicitationHandler) {
-        return route(POST("/api/v1/solicitations"), solicitationHandler::listenCreateSolicitation);
+    public RouterFunction<ServerResponse> creditTypeRouterFunction(CreditTypeHandler creditTypeHandler) {
+        return route(GET("/api/v1/credit-types"), creditTypeHandler::listenGetAllUsers);
     }
 }

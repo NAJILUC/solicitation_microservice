@@ -5,6 +5,9 @@ import lombok.Getter;
 @Getter
 public enum ErrorCodeEnum {
 
+    //    User
+    C01USER01("Email already exists", ErrorEnum.REQUEST_EXCEPTION.getValue(), "Email"),
+    C01USER02("User was not found", ErrorEnum.NOT_FOUND_EXCEPTION.getValue(), "Email"),
 
     //    Credit Type
     C01CRTY01("Credit type was not found", ErrorEnum.NOT_FOUND_EXCEPTION.getValue(), "Id"),
