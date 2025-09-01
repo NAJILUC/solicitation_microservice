@@ -1,16 +1,17 @@
 package co.com.pragma.usecase.usecases.solicitation;
 
-import co.com.pragma.model.credittype.CreditType;
 import co.com.pragma.model.solicitation.Solicitation;
 import co.com.pragma.model.solicitation.SolicitationWthData;
 import co.com.pragma.model.solicitation.gateways.SolicitationRepository;
-import co.com.pragma.model.status.Status;
+import co.com.pragma.usecase.enums.credittypes.CreditTypeEnum;
 import co.com.pragma.usecase.enums.status.StatusEnum;
 import co.com.pragma.usecase.usecases.credittype.CreditTypeUseCase;
 import co.com.pragma.usecase.usecases.status.StatusUseCase;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Set;
 import java.util.logging.Logger;
 
 @RequiredArgsConstructor
@@ -32,23 +33,18 @@ public class SolicitationUseCase {
                         statusUseCase.getStatusById(solicitation.getStatusId())
                                 .flatMap(status ->
                                         solicitationRepository.save(solicitation)
-                                                .map(saved -> toSolicitationWithData(saved, status, creditType))
+                                                .map(saved -> new SolicitationWthData(saved, status, creditType))
                                 )
                 );
     }
 
-    private SolicitationWthData toSolicitationWithData(Solicitation solicitation, Status status, CreditType creditType) {
-        log.info("Mapping to response");
-        return new SolicitationWthData(
-                solicitation.getId(),
-                solicitation.getAmount(),
-                solicitation.getTerm(),
-                solicitation.getEmail(),
-                status.getDescription(),
-                status.getId(),
-                creditType.getName(),
-                creditType.getId(),
-                solicitation.getApplicantDocument()
-        );
+    public Flux<SolicitationWthData> getSolicitationsByStatusId() {
+        log.info("Search solicitations by statusId");
+        Set<Long> validStatusId = Set.of(StatusEnum.PENDING.getId(),
+                StatusEnum.REJECTED.getId(), StatusEnum.MANUAL_REVISION.getId());
+        return solicitationRepository.findAllByStatusIdIn(validStatusId)
+                .map(solicitation -> new SolicitationWthData(solicitation,
+                        StatusEnum.getDescriptionById(solicitation.getStatusId()),
+                        CreditTypeEnum.getNameById(solicitation.getCreditTypeId())));
     }
 }

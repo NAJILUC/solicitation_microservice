@@ -1,16 +1,15 @@
 package co.com.pragma.r2dbc;
 
-import co.com.pragma.model.credittype.CreditType;
-import co.com.pragma.model.credittype.gateways.CreditTypeRepository;
 import co.com.pragma.model.solicitation.Solicitation;
 import co.com.pragma.model.solicitation.gateways.SolicitationRepository;
-import co.com.pragma.r2dbc.entity.CreditTypeEntity;
 import co.com.pragma.r2dbc.entity.SolicitationEntity;
 import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Set;
 
 @Repository
 public class SolicitationEntityRepositoryAdapter extends ReactiveAdapterOperations<
@@ -41,5 +40,11 @@ public class SolicitationEntityRepositoryAdapter extends ReactiveAdapterOperatio
     @Override
     public Mono<Solicitation> findById(Long id) {
         return super.findById(id);
+    }
+
+    @Override
+    public Flux<Solicitation> findAllByStatusIdIn(Set<Long> statusId) {
+        return repository.findByStatusIds(statusId)
+                .map(solicitationEntity -> super.mapper.map(solicitationEntity, Solicitation.class));
     }
 }

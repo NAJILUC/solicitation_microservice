@@ -3,7 +3,9 @@ package co.com.pragma.api.routerrest.solicitations;
 import co.com.pragma.api.dto.request.solicitations.CreateSolicitationRequest;
 import co.com.pragma.api.dto.response.solicitations.SolicitationResponse;
 import co.com.pragma.api.handlers.solicitations.SolicitationHandler;
+import co.com.pragma.model.solicitation.SolicitationWthData;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
@@ -51,9 +54,30 @@ public class SolicitationRouterRest {
                                     @ApiResponse(responseCode = "500", description = "Internal server error")
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = "/api/v1/solicitations",
+                    method = RequestMethod.GET,
+                    operation = @Operation(
+                            operationId = "getAllSolicitations",
+                            summary = "Get all solicitations",
+                            tags = {"Solicitation"},
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Solicitations List",
+                                            content = @Content(
+                                                    mediaType = "application/json",
+                                                    array = @ArraySchema(schema = @Schema(implementation = SolicitationWthData.class))
+                                            )
+                                    ),
+                                    @ApiResponse(responseCode = "500", description = "Internal server error")
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> solicitationRouterFunction(SolicitationHandler solicitationHandler) {
-        return route(POST("/api/v1/solicitations"), solicitationHandler::listenCreateSolicitation);
+        return route(POST("/api/v1/solicitations"), solicitationHandler::listenCreateSolicitation)
+                .and(route(GET("/api/v1/solicitations"), solicitationHandler::listenGetAllSolByStatusId));
     }
 }

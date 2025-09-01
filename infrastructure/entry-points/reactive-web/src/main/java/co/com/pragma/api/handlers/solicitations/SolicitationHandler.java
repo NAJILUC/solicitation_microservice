@@ -5,11 +5,8 @@ import co.com.pragma.api.dto.response.solicitations.SolicitationResponse;
 import co.com.pragma.api.handlers.utils.GenericHandler;
 import co.com.pragma.api.mapper.solicitations.SolicitationMapper;
 import co.com.pragma.model.solicitation.Solicitation;
-import co.com.pragma.model.status.Status;
 import co.com.pragma.usecase.usecases.solicitation.SolicitationUseCase;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Validator;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -38,5 +35,11 @@ public class SolicitationHandler extends GenericHandler {
                     SolicitationResponse userResponse = SolicitationMapper.toResponse(solicitationWthData);
                     return this.okResponse(userResponse);
                 });
+    }
+
+    public Mono<ServerResponse> listenGetAllSolByStatusId(ServerRequest serverRequest) {
+        return solicitationUseCase.getSolicitationsByStatusId()
+                .collectList()
+                .flatMap(this::okResponse);
     }
 }
