@@ -2,14 +2,18 @@ package co.com.pragma.r2dbc;
 
 import co.com.pragma.model.solicitation.Solicitation;
 import co.com.pragma.model.solicitation.gateways.SolicitationRepository;
+import co.com.pragma.model.utils.PaginationObj;
 import co.com.pragma.r2dbc.entity.SolicitationEntity;
 import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Set;
+import java.util.List;
 
 @Repository
 public class SolicitationEntityRepositoryAdapter extends ReactiveAdapterOperations<
@@ -43,8 +47,34 @@ public class SolicitationEntityRepositoryAdapter extends ReactiveAdapterOperatio
     }
 
     @Override
-    public Flux<Solicitation> findAllByStatusIdIn(Set<Long> statusId) {
-        return repository.findByStatusIds(statusId)
+    public Flux<Solicitation> findAllByStatusIdIn(List<Long> statusId, PaginationObj paginationObj) {
+
+        return repository.findByStatusIds(statusId, paginationObj.getSize(), paginationObj.getPage())
                 .map(solicitationEntity -> super.mapper.map(solicitationEntity, Solicitation.class));
+    }
+
+    @Override
+    public Mono<Long> countByStatusIdIn(List<Long> statusIds) {
+        return repository.countByStatusIdIn(statusIds);
+    }
+
+    public static Pageable createPageAndSort(PaginationObj paginationObj) {
+        paginationObj.setPage((paginationObj.getPage()) > 0 ? paginationObj.getPage() - 1 : paginationObj.getPage());
+        Pageable pageable;
+        if (paginationObj.getColumn() == null || paginationObj.getColumn().isEmpty()) {
+            pageable = PageRequest.of(paginationObj.getPage(), paginationObj.getSize());
+        } else {
+            pageable = PageRequest.of(paginationObj.getPage(), paginationObj.getSize(),
+                    createSort(paginationObj.getOrder(), paginationObj.getColumn()));
+        }
+        return pageable;
+    }
+
+    private static Sort createSort(String order, String column) {
+        if ("desc".equalsIgnoreCase(order)) {
+            return Sort.by(Sort.Direction.DESC, column);
+        } else {
+            return Sort.by(Sort.Direction.ASC, column);
+        }
     }
 }

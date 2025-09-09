@@ -4,6 +4,7 @@ import co.com.pragma.api.dto.request.solicitations.CreateSolicitationRequest;
 import co.com.pragma.api.dto.response.solicitations.SolicitationResponse;
 import co.com.pragma.model.solicitation.Solicitation;
 import co.com.pragma.model.solicitation.SolicitationWthData;
+import co.com.pragma.usecase.objects.solicitations.SolicitationFilterObj;
 
 public class SolicitationMapper {
 
@@ -28,6 +29,13 @@ public class SolicitationMapper {
                 .creditTypeName(solicitation.getCreditTypeName())
                 .creditTypeId(solicitation.getCreditTypeId())
                 .applicantDocument(solicitation.getApplicantDocument())
+                .build();
+    }
+
+    public static SolicitationFilterObj solicitationFilterObj(Long creditTypeId,Long statusId ){
+        return SolicitationFilterObj.builder()
+                .creditTypeId(creditTypeId)
+                .statusId(statusId)
                 .build();
     }
 }

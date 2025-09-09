@@ -76,6 +76,7 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
                     body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
                     body.put("error", "Unexpected error");
                     body.put("code", ErrorEnum.INTERNAL_EXCEPTION.getCode());
+                    body.put("message", ex.getMessage());
                 }
             }
 

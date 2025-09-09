@@ -29,7 +29,6 @@ public class CreditTypeUseCase {
     public Mono<CreditType> getCreditTypeById(Long id) {
         log.info("Search credit type by id");
         return creditTypeRepository.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundValidationException(
-                List.of(ErrorCodeEnum.C01CRTY01))));
+                .switchIfEmpty(Mono.error(new NotFoundValidationException(List.of(ErrorCodeEnum.C01CRTY01))));
     }
 }

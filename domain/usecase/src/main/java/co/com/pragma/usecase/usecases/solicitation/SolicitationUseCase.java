@@ -3,14 +3,17 @@ package co.com.pragma.usecase.usecases.solicitation;
 import co.com.pragma.model.solicitation.Solicitation;
 import co.com.pragma.model.solicitation.SolicitationWthData;
 import co.com.pragma.model.solicitation.gateways.SolicitationRepository;
-import co.com.pragma.usecase.enums.credittypes.CreditTypeEnum;
+import co.com.pragma.model.utils.PaginationObj;
 import co.com.pragma.usecase.enums.status.StatusEnum;
+import co.com.pragma.usecase.objects.solicitations.SolicitationFilterObj;
+import co.com.pragma.usecase.objects.utils.GenericPagModelResponse;
 import co.com.pragma.usecase.usecases.credittype.CreditTypeUseCase;
 import co.com.pragma.usecase.usecases.status.StatusUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -38,13 +41,34 @@ public class SolicitationUseCase {
                 );
     }
 
-    public Flux<SolicitationWthData> getSolicitationsByStatusId() {
-        log.info("Search solicitations by statusId");
-        Set<Long> validStatusId = Set.of(StatusEnum.PENDING.getId(),
-                StatusEnum.REJECTED.getId(), StatusEnum.MANUAL_REVISION.getId());
-        return solicitationRepository.findAllByStatusIdIn(validStatusId)
-                .map(solicitation -> new SolicitationWthData(solicitation,
-                        StatusEnum.getDescriptionById(solicitation.getStatusId()),
-                        CreditTypeEnum.getNameById(solicitation.getCreditTypeId())));
+    public Mono<GenericPagModelResponse<SolicitationWthData>> getSolicitationsByStatusId(
+            PaginationObj paginationObj, SolicitationFilterObj solicitationFilterObj) {
+
+        List<Long> validStatusId = List.of(
+                StatusEnum.PENDING.getId(),
+                StatusEnum.REJECTED.getId(),
+                StatusEnum.MANUAL_REVISION.getId()
+        );
+
+        Mono<Long> totalItems = solicitationRepository.countByStatusIdIn(validStatusId);
+
+        Flux<SolicitationWthData> items = solicitationRepository.findAllByStatusIdIn(validStatusId, paginationObj)
+                .flatMap(solicitation ->
+                        creditTypeUseCase.getCreditTypeById(solicitation.getCreditTypeId())
+                                .flatMap(creditType ->
+                                        statusUseCase.getStatusById(solicitation.getStatusId())
+                                                .map(status -> new SolicitationWthData(solicitation, status, creditType))
+                                )
+                );
+
+        return totalItems.flatMap(total ->
+                items.collectList()
+                        .map(list -> new GenericPagModelResponse<>(
+                                list,
+                                paginationObj.getPage(),
+                                paginationObj.getSize(),
+                                total
+                        ))
+        );
     }
 }

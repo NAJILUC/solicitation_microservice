@@ -19,6 +19,7 @@ public class SolicitationWthData {
     private Long statusId;
     private String creditTypeName;
     private Long creditTypeId;
+    private Double interestRate;
     private String applicantDocument;
 
     public SolicitationWthData(Solicitation solicitation, Status status, CreditType creditType) {
@@ -30,10 +31,11 @@ public class SolicitationWthData {
         this.statusId = status.getId();
         this.creditTypeName = creditType.getName();
         this.creditTypeId = creditType.getId();
+        this.interestRate = creditType.getInterestRate();
         this.applicantDocument = solicitation.getApplicantDocument();
     }
 
-    public SolicitationWthData(Solicitation solicitation, String statusName, String creditTypeName) {
+    public SolicitationWthData(Solicitation solicitation, String statusName, String creditTypeName, Double interestRate) {
         this.id = solicitation.getId();
         this.amount = solicitation.getAmount();
         this.term = solicitation.getTerm();
@@ -42,6 +44,7 @@ public class SolicitationWthData {
         this.statusId = solicitation.getStatusId();
         this.creditTypeName = creditTypeName;
         this.creditTypeId = solicitation.getCreditTypeId();
+        this.interestRate = interestRate;
         this.applicantDocument = solicitation.getApplicantDocument();
     }
 }
